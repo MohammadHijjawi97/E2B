@@ -64,7 +64,13 @@ export function parseMetadata(metadataRaw?: string) {
   if (metadataRaw && metadataRaw.length > 0) {
     const parsedMetadata: Record<string, string> = {}
     metadataRaw.split(',').map((pair: string) => {
-      const [key, value] = pair.split('=')
+      // Split on the first '=' only, values may contain '=' themselves
+      const separatorIndex = pair.indexOf('=')
+      if (separatorIndex === -1) {
+        return
+      }
+      const key = pair.slice(0, separatorIndex)
+      const value = pair.slice(separatorIndex + 1)
       if (key && value) {
         parsedMetadata[key.trim()] = value.trim()
       }
