@@ -225,6 +225,18 @@ def test_request_timeout_zero_means_no_timeout():
     assert config.get_request_timeout(0) is None
 
 
+def test_get_api_params_keeps_request_timeout_disabled():
+    # Instance methods (pause, kill, get_info, ...) rebuild a ConnectionConfig
+    # from these params, which must not fall back to the default timeout.
+    config = ConnectionConfig(request_timeout=0)
+    rebuilt = ConnectionConfig(**config.get_api_params())
+    assert rebuilt.request_timeout is None
+
+    config = ConnectionConfig(request_timeout=11)
+    rebuilt = ConnectionConfig(**config.get_api_params(request_timeout=0))
+    assert rebuilt.request_timeout is None
+
+
 def test_get_api_params_includes_sandbox_url():
     config = ConnectionConfig(sandbox_url="https://sandbox.example.com")
 
